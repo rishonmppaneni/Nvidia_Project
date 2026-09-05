@@ -25,10 +25,10 @@ sudo make install
 
 Organize images like this:
 ```
-jetson-inference/python/training/classification/data/recycling_waste-products/
+jetson-inference/python/training/classification/data/Cancer/
 ├── train/
-│   ├── waste-products/
-│   ├── recycling/
+│   ├── benign/
+│   ├── malignant/
 ├── val/
 └── test/
 
@@ -37,17 +37,17 @@ jetson-inference/python/training/classification/data/recycling_waste-products/
 ### 3. Training
 
 1. Enable more memory: `echo 1 | sudo tee /proc/sys/vm/overcommit_memory`
-2. Train the model (I used batch size of 4)
+2. Train the model (I used 55 epochs)
   ```
   cd jetson-inference
   ./docker/run.sh
   cd python/training/classification
-  python3 train.py --model-dir=models/recycling_waste-products data/Data
+  python3 train.py --model-dir=models/finalv1 data/Cancer
   ```
 3. Export Model
   ```
   # Still in docker container:
-  python3 onnx_export.py --model-dir=models/recycling_waste-products
+  python3 onnx_export.py --model-dir=models/finalv1
   ```
 
 ## Using the Model
@@ -55,8 +55,8 @@ jetson-inference/python/training/classification/data/recycling_waste-products/
 ### Set Variables
 ```
 cd jetson-inference/python/training/classification
-NET=models/recycling_waste-products
-DATASET=data/Data
+NET=models/finalv1
+DATASET=data/Cancer
 ```
 
 ### Test on Image
