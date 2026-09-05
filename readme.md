@@ -1,4 +1,4 @@
-Skin Cancer Image Classification
+# Skin Cancer Image Classification
 
 This project is an image classification model that classifies skin cancer images into either being benign or malignant.
 
@@ -8,8 +8,10 @@ This project is an image classification model that classifies skin cancer images
 I downloaded the skin cancer dataset from Kaggle and the images were classified into 2 distinct categories(malignant and benign). Once I downloaded the dataset, it already contained test and train folders but was missing a validation folder. I took 80% of the images for training, 15% for validation, and 5% for testing. I then used a pretrained resnet-18 model to train my dataset. I was getting a good accuracy of 80% for the training and validation. My model did a good job in predicting the benign images, but it did struggle a little to predict the malignant images. My model did fairly decent and is reliable, however if someone were to use this model, they shouldn't rely on it to be 100% accurate all the time. One should check to see how it is performing from time to time and it can be used for fairly good purposes. 
 ## Running this project
 
-#Setup
-1. Install Jetson Inference
+## Setup
+### 1. Install Jetson Inference
+
+```
 git clone --recursive https://github.com/dusty-nv/jetson-inference
 cd jetson-inference
 mkdir build
@@ -17,28 +19,51 @@ cd build
 cmake ../
 make
 sudo make install
-2. Prepare Dataset
-Organize images like this:
+```
 
+### 2. Prepare Dataset
+
+Organize images like this:
+```
 jetson-inference/python/training/classification/data/recycling_waste-products/
 ├── train/
-│   ├── benign/
-│   ├── malignant/
+│   ├── waste-products/
+│   ├── recycling/
 ├── val/
 └── test/
 
-3. Training
-Enable more memory: echo 1 | sudo tee /proc/sys/vm/overcommit_memory
-Train the model (I used 55 epochs)
-cd jetson-inference
-./docker/run.sh
-cd python/training/classification
-python3 train.py --model-dir=models/finalv1 data/Cancer
-Export Model
-# Still in docker container:
-python3 onnx_export.py --model-dir=models/finalv1
-Using the Model
-Set Variables
+```
+
+### 3. Training
+
+1. Enable more memory: `echo 1 | sudo tee /proc/sys/vm/overcommit_memory`
+2. Train the model (I used batch size of 4)
+  ```
+  cd jetson-inference
+  ./docker/run.sh
+  cd python/training/classification
+  python3 train.py --model-dir=models/recycling_waste-products data/Data
+  ```
+3. Export Model
+  ```
+  # Still in docker container:
+  python3 onnx_export.py --model-dir=models/recycling_waste-products
+  ```
+
+## Using the Model
+
+### Set Variables
+```
+cd jetson-inference/python/training/classification
+NET=models/recycling_waste-products
+DATASET=data/Data
+```
+
+### Test on Image
+```
+imagenet.py --model=$NET/resnet18.onnx --input_blob=input_0 --output_blob=output_0 --labels=$DATASET/labels.txt $DATASET/test/boot/<image.jpg> result.jpg
+```
+Replace <image.jpg> with your actual image.
 
 
 
